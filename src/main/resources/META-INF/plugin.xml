@@ -1,0 +1,47 @@
+<idea-plugin>
+    <id>io.github.murphy-955.rustreader</id>
+    <name>Rust Compiler Reader</name>
+    <vendor email="13776528859@163.com" url="https://github.com/murphy-955/rust-cargo-exapnad-mir-llvm">zeyuli</vendor>
+
+    <description><![CDATA[
+      <p>Inspect macro expansion, MIR, and generated assembly for Rust code in RustRover.</p>
+      <ul>
+        <li>Macro expansion for the current item or the whole crate</li>
+        <li>MIR for the current function, including closures and impl methods</li>
+        <li>rustc-generated assembly for the current function</li>
+      </ul>
+      <p>The plugin drives the project's own <code>cargo</code> and <code>rustc</code>, so output matches
+      the toolchain and profile you use for normal builds. <code>cargo-expand</code> and
+      <code>cargo-show-asm</code> are optional enhancements and are never installed automatically.</p>
+      <p>No default shortcut is assigned. Invoke <b>Show Compiler Reader</b> from the editor context menu
+      or with Find Action, and bind a shortcut in Settings | Keymap if desired.</p>
+    ]]></description>
+
+    <idea-version since-build="262.11879.102"/>
+
+    <depends>com.intellij.modules.platform</depends>
+    <!-- Compatibility gate: the IDE must provide Rust support. The plugin does not use Rust plugin APIs. -->
+    <depends>com.jetbrains.rust</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Rust Compiler Reader"
+                    anchor="right"
+                    icon="/icons/rustReader.svg"
+                    factoryClass="io.github.murphy955.rustreader.ui.InspectorToolWindowFactory"/>
+        <projectService serviceImplementation="io.github.murphy955.rustreader.settings.InspectorSettings"/>
+        <projectConfigurable id="io.github.murphy955.rustreader.settings"
+                             instance="io.github.murphy955.rustreader.settings.InspectorSettingsConfigurable"
+                             displayName="Rust Compiler Reader"
+                             parentId="tools"/>
+    </extensions>
+
+    <actions>
+        <action id="RustReader.Show"
+                class="io.github.murphy955.rustreader.actions.ShowInspectorAction"
+                text="Show Compiler Reader"
+                description="Show macro expansion, MIR and assembly for the current item">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <!-- No default shortcut on purpose: Ctrl+Alt+Shift+M is used by RustRover's Expand Macro. -->
+        </action>
+    </actions>
+</idea-plugin>
