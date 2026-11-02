@@ -1,1 +1,11 @@
 /.idea/
+/.intellijPlatform/
+.gradle/
+build/
+out/
+*.iml
+.DS_Store
+src/test/testData/sample-crate/target/
+src/test/testData/sample-crate/.rust-compiler-reader/
+src/test/testData/sample-crate/Cargo.lock
+src/test/testData/sample-crate/.idea
