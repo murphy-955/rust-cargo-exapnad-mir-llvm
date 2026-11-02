@@ -4,6 +4,7 @@
     <vendor email="13776528859@163.com" url="https://github.com/murphy-955/rust-cargo-exapnad-mir-llvm">zeyuli</vendor>
 
     <description><![CDATA[
+      <h3>English</h3>
       <p>Inspect macro expansion, MIR, and generated assembly for Rust code in RustRover.</p>
       <ul>
         <li>Macro expansion for the current item or the whole crate</li>
@@ -15,6 +16,19 @@
       <code>cargo-show-asm</code> are optional enhancements and are never installed automatically.</p>
       <p>No default shortcut is assigned. Invoke <b>Show Compiler Reader</b> from the editor context menu
       or with Find Action, and bind a shortcut in Settings | Keymap if desired.</p>
+
+      <h3>中文</h3>
+      <p>在 RustRover 中查看当前 Rust 代码项的宏展开、MIR 和 rustc 生成的汇编。</p>
+      <ul>
+        <li>当前项或整个 crate 的宏展开</li>
+        <li>当前函数、闭包和 impl 方法的 MIR</li>
+        <li>当前函数对应的 rustc 汇编</li>
+      </ul>
+      <p>插件直接调用项目自身的 <code>cargo</code> 和 <code>rustc</code>，因此输出与日常构建使用的
+      工具链和 profile 一致。<code>cargo-expand</code> 和 <code>cargo-show-asm</code>
+      是可选增强，插件不会自动安装。</p>
+      <p>插件默认不分配快捷键。可从编辑器右键菜单或 Find Action 调用
+      <b>Show Compiler Reader</b>，也可以在 Settings | Keymap 中自行绑定。</p>
     ]]></description>
 
     <idea-version since-build="262.11879.102"/>

@@ -1,6 +1,10 @@
 # Rust Compiler Reader
 
-在 RustRover 中查看当前函数的**宏展开**、**MIR** 和 **rustc 生成的汇编**。三份产物集中在同一个工具窗里，用来回答「这段代码在编译器眼里长什么样」。
+## Overview | 概览
+
+**English** — Rust Compiler Reader shows the macro expansion, MIR, and rustc-generated assembly for the current Rust item in RustRover. The three views live in one tool window and help you understand how your source code looks to the compiler.
+
+**中文** — Rust Compiler Reader 在 RustRover 中展示当前 Rust 代码项的宏展开、MIR 和 rustc 生成的汇编。三份产物集中在同一个工具窗里，用来回答「这段代码在编译器眼里长什么样」。
 
 - 插件 ID：`io.github.murphy-955.rustreader`
 - 支持 IDE：RustRover 2026.2.5+（`sinceBuild = 262.11879.102`）
