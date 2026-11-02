@@ -279,17 +279,14 @@ class PluginPlatformTest : BasePlatformTestCase() {
     }
 
     fun testNextMatchMovesCaretAndScrolls() {
-        org.junit.Assume.assumeFalse(java.awt.GraphicsEnvironment.isHeadless())
         val tab = OutputTab(project, ArtifactKind.MIR)
-        val frame = javax.swing.JFrame()
         try {
             val text = (0..240).joinToString("\n") { index ->
                 if (index == 200) "needle here" else "line $index"
             }
             tab.setContent(text)
-            frame.contentPane.add(tab.root)
-            frame.setSize(600, 320)
-            frame.isVisible = true
+            tab.root.setSize(600, 320)
+            layoutTree(tab.root)
 
             val search = findComponents(tab.root, com.intellij.ui.components.JBTextField::class.java).single()
             search.text = "needle"
@@ -304,7 +301,6 @@ class PluginPlatformTest : BasePlatformTestCase() {
                 tab.verticalScrollOffset() > 0,
             )
         } finally {
-            frame.dispose()
             tab.dispose()
         }
     }
