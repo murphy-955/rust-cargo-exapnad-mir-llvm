@@ -1,0 +1,48 @@
+[package]
+name = "sample-crate"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "sample_crate"
+path = "src/lib.rs"
+
+# Baseline optimized build: fast enough to rebuild, still close to production.
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 4
+debug = false
+overflow-checks = false
+
+# Maximum runtime performance: single codegen unit, fat LTO, debug line info for profiling.
+[profile.maxopt]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+debug = true
+overflow-checks = false
+panic = "abort"
+strip = "none"
+
+# Faster builds with more optimization than dev; overflow checks stay enabled.
+[profile.fast]
+inherits = "release"
+opt-level = 1
+lto = false
+codegen-units = 16
+debug = 1
+incremental = true
+overflow-checks = true
+
+# Minimum binary size: size-focused optimization, fat LTO, stripped symbols.
+[profile.small]
+inherits = "release"
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+debug = false
+overflow-checks = false
+panic = "abort"
+strip = "symbols"
