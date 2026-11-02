@@ -1,0 +1,254 @@
+// WARNING: This output format is intended for human consumers only
+// and is subject to change without notice. Knock yourself out.
+// HINT: See also -Z dump-mir for MIR at specific points during compilation.
+fn <impl at src/lib.rs:3:10: 3:15>::fmt(_1: &Point, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: &str;
+    let mut _4: &str;
+    let mut _5: &dyn std::fmt::Debug;
+    let _6: &u64;
+    let mut _7: &str;
+    let mut _8: &dyn std::fmt::Debug;
+    let _9: &&u64;
+    let _10: &u64;
+
+    bb0: {
+        _3 = const "Point";
+        _4 = const "x";
+        _6 = &((*_1).0: u64);
+        _5 = copy _6 as &dyn std::fmt::Debug (PointerCoercion(Unsize, Implicit));
+        _7 = const "y";
+        _10 = &((*_1).1: u64);
+        _9 = &_10;
+        _8 = copy _9 as &dyn std::fmt::Debug (PointerCoercion(Unsize, Implicit));
+        _0 = Formatter::<'_>::debug_struct_field2_finish(copy _2, move _3, move _4, move _5, move _7, move _8) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+alloc3 (size: 1, align: 1) {
+    79                                              │ y
+}
+
+alloc2 (size: 1, align: 1) {
+    78                                              │ x
+}
+
+alloc1 (size: 5, align: 1) {
+    50 6f 69 6e 74                                  │ Point
+}
+
+fn <impl at src/lib.rs:3:17: 3:22>::clone(_1: &Point) -> Point {
+    debug self => _1;
+    let mut _0: Point;
+    let mut _2: u64;
+    let _3: &u64;
+    let mut _4: u64;
+    let _5: &u64;
+
+    bb0: {
+        _3 = &((*_1).0: u64);
+        _2 = copy (*_3);
+        _5 = &((*_1).1: u64);
+        _4 = copy (*_5);
+        _0 = Point { x: move _2, y: move _4 };
+        return;
+    }
+}
+
+fn <impl at src/lib.rs:9:1: 9:11>::get(_1: &Point) -> u64 {
+    debug self => _1;
+    let mut _0: u64;
+    let mut _2: u64;
+    let mut _3: u64;
+    let mut _4: (u64, bool);
+
+    bb0: {
+        _2 = copy ((*_1).0: u64);
+        _3 = copy ((*_1).1: u64);
+        _4 = AddWithOverflow(copy _2, copy _3);
+        assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", move _2, move _3) -> [success: bb1, unwind continue];
+    }
+
+    bb1: {
+        _0 = move (_4.0: u64);
+        return;
+    }
+}
+
+fn <impl at src/lib.rs:15:1: 15:23>::fmt(_1: &Point, _2: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    debug self => _1;
+    debug f => _2;
+    let mut _0: std::result::Result<(), std::fmt::Error>;
+    let mut _3: std::fmt::Arguments<'_>;
+    let _4: (&u64, &u64);
+    let mut _5: &u64;
+    let mut _6: &u64;
+    let mut _8: core::fmt::rt::Argument<'_>;
+    let mut _9: core::fmt::rt::Argument<'_>;
+    let mut _10: &[u8; 10];
+    let _11: &[core::fmt::rt::Argument<'_>; 2];
+    let mut _12: &u64;
+    let mut _13: &u64;
+    scope 1 {
+        debug args => _4;
+        let _7: [core::fmt::rt::Argument<'_>; 2];
+        scope 2 {
+            debug args => _7;
+        }
+    }
+
+    bb0: {
+        _5 = &((*_1).0: u64);
+        _6 = &((*_1).1: u64);
+        _4 = (move _5, move _6);
+        _12 = no_retag copy (_4.0: &u64);
+        _8 = core::fmt::rt::Argument::<'_>::new_display::<u64>(copy _12) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _13 = no_retag copy (_4.1: &u64);
+        _9 = core::fmt::rt::Argument::<'_>::new_display::<u64>(copy _13) -> [return: bb2, unwind continue];
+    }
+
+    bb2: {
+        _7 = [move _8, move _9];
+        _10 = const b"\x01(\xc0\x02, \xc0\x01)\x00";
+        _11 = &_7;
+        _3 = Arguments::<'_>::new::<10, 2>(move _10, copy _11) -> [return: bb3, unwind continue];
+    }
+
+    bb3: {
+        _0 = Formatter::<'_>::write_fmt(copy _2, move _3) -> [return: bb4, unwind continue];
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+alloc4 (size: 10, align: 1) {
+    01 28 c0 02 2c 20 c0 01 29 00                   │ .(.., ..).
+}
+
+fn <impl at src/lib.rs:25:1: 25:20>::area(_1: &Point) -> u64 {
+    debug self => _1;
+    let mut _0: u64;
+    let mut _2: u64;
+    let mut _3: u64;
+    let mut _4: (u64, bool);
+
+    bb0: {
+        _2 = copy ((*_1).0: u64);
+        _3 = copy ((*_1).1: u64);
+        _4 = MulWithOverflow(copy _2, copy _3);
+        assert(!move (_4.1: bool), "attempt to compute `{} * {}`, which would overflow", move _2, move _3) -> [success: bb1, unwind continue];
+    }
+
+    bb1: {
+        _0 = move (_4.0: u64);
+        return;
+    }
+}
+
+fn run(_1: &Point, _2: u64) -> u64 {
+    debug p => _1;
+    debug n => _2;
+    let mut _0: u64;
+    let _3: {closure@src/lib.rs:32:13: 32:28};
+    let mut _4: &u64;
+    let mut _5: &{closure@src/lib.rs:32:13: 32:28};
+    let mut _6: (u64,);
+    let mut _7: u64;
+    scope 1 {
+        debug f => _3;
+    }
+
+    bb0: {
+        _4 = &_2;
+        _3 = {closure@src/lib.rs:32:13: 32:28} { n: move _4 };
+        _5 = &_3;
+        _7 = Point::get(copy _1) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        _6 = (move _7,);
+        _0 = <{closure@src/lib.rs:32:13: 32:28} as Fn<(u64,)>>::call(move _5, move _6) -> [return: bb2, unwind continue];
+    }
+
+    bb2: {
+        return;
+    }
+}
+
+fn run::{closure#0}(_1: &{closure@src/lib.rs:32:13: 32:28}, _2: u64) -> u64 {
+    debug v => _2;
+    debug n => (*((*_1).0: &u64));
+    let mut _0: u64;
+    let mut _3: u64;
+    let mut _4: (u64, bool);
+    let mut _5: &u64;
+
+    bb0: {
+        _5 = no_retag copy ((*_1).0: &u64);
+        _3 = copy (*_5);
+        _4 = AddWithOverflow(copy _2, copy _3);
+        assert(!move (_4.1: bool), "attempt to compute `{} + {}`, which would overflow", copy _2, move _3) -> [success: bb1, unwind continue];
+    }
+
+    bb1: {
+        _0 = move (_4.0: u64);
+        return;
+    }
+}
+
+fn helper(_1: u64) -> u64 {
+    debug v => _1;
+    let mut _0: u64;
+    let mut _2: (u64, bool);
+
+    bb0: {
+        _2 = MulWithOverflow(copy _1, const 2_u64);
+        assert(!move (_2.1: bool), "attempt to compute `{} * {}`, which would overflow", copy _1, const 2_u64) -> [success: bb1, unwind continue];
+    }
+
+    bb1: {
+        _0 = move (_2.0: u64);
+        return;
+    }
+}
+
+fn generic(_1: T, _2: T) -> T {
+    debug a => _1;
+    debug b => _2;
+    let mut _0: T;
+
+    bb0: {
+        _0 = <T as Add>::add(copy _1, copy _2) -> [return: bb1, unwind continue];
+    }
+
+    bb1: {
+        return;
+    }
+}
+
+fn use_macro(_1: u64) -> u64 {
+    debug v => _1;
+    let mut _0: u64;
+    let mut _2: (u64, bool);
+
+    bb0: {
+        _2 = AddWithOverflow(copy _1, copy _1);
+        assert(!move (_2.1: bool), "attempt to compute `{} + {}`, which would overflow", copy _1, copy _1) -> [success: bb1, unwind continue];
+    }
+
+    bb1: {
+        _0 = move (_2.0: u64);
+        return;
+    }
+}
