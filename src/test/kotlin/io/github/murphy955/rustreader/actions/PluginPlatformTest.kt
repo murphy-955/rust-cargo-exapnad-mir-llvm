@@ -379,9 +379,22 @@ class PluginPlatformTest : BasePlatformTestCase() {
             .forEach { assertChildrenFit(it, context) }
     }
 
-    fun testSettingsConfigurableCanBeCreated() {
+    fun testSettingsConfigurableScrollsAllSections() {
         val configurable = io.github.murphy955.rustreader.settings.InspectorSettingsConfigurable(project)
-        assertNotNull(configurable.createComponent())
-        configurable.disposeUIResources()
+        try {
+            val component = configurable.createComponent()
+            assertTrue("settings should use a scroll pane, got ${component.javaClass.name}", component is JScrollPane)
+            val scroll = component as JScrollPane
+            assertEquals(
+                javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                scroll.verticalScrollBarPolicy,
+            )
+            assertTrue(
+                "settings form should be taller than the visible viewport",
+                scroll.viewport.view.preferredSize.height > 400,
+            )
+        } finally {
+            configurable.disposeUIResources()
+        }
     }
 }

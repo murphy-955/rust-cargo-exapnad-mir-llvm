@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.JBUI
@@ -19,6 +20,7 @@ import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JSpinner
+import javax.swing.ScrollPaneConstants
 import javax.swing.SpinnerNumberModel
 
 class InspectorSettingsConfigurable(private val project: Project) : SearchableConfigurable {
@@ -170,7 +172,7 @@ class InspectorSettingsConfigurable(private val project: Project) : SearchableCo
                 .addLabeledComponent("Target triple (empty = host):", targetTripleField)
                 .addLabeledComponent("Features:", featuresRow)
                 .addLabeledComponent("Extra rustc arguments:", extraArgsField)
-                .addLabeledComponent("Default tab:", defaultTabCombo)
+                .addLabeledComponent("Default view:", defaultTabCombo)
                 .addComponent(TitledSeparator("Macro expansion"))
                 .addLabeledComponent("Backend:", macroBackendCombo)
                 .addComponent(allowBootstrapCheck)
@@ -197,8 +199,10 @@ class InspectorSettingsConfigurable(private val project: Project) : SearchableCo
                 .panel
 
             form.border = JBUI.Borders.empty(8)
-            root = JPanel(BorderLayout()).apply {
-                add(form, BorderLayout.NORTH)
+            root = JBScrollPane(form).apply {
+                border = JBUI.Borders.empty()
+                verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+                horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
                 preferredSize = Dimension(760, 620)
             }
 
