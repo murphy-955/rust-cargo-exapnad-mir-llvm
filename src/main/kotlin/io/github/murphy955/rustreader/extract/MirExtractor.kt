@@ -25,7 +25,11 @@ private data class MirFunction(
  */
 object MirExtractor {
     private val functionStart = Regex("""^fn (.+?)\(.*""", RegexOption.MULTILINE)
-    private val implHeader = Regex("""^<impl at (.+):(\d+):(\d+): (\d+):(\d+)>::(.+)$""")
+    // rustc prefixes impl methods with their module path, e.g.
+    // `fn api::<impl at src/api.rs:29:1: 29:14>::new`. The prefix also appears for impls
+    // nested in generated code (`...::deserialize::<impl at ...>::expecting`), so match the
+    // last `<impl at ...>` segment.
+    private val implHeader = Regex("""^(?:.*::)?<impl at (.+):(\d+):(\d+): (\d+):(\d+)>::(.+)$""")
     private val closureMarker = "{closure#"
 
     fun extract(

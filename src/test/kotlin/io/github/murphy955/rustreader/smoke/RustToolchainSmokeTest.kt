@@ -38,6 +38,9 @@ class RustToolchainSmokeTest {
 
     @After
     fun cleanup() {
+        // @After still runs for tests skipped by an assumption, so do not delete the shared
+        // sample target directory during an ordinary unit-test run.
+        if (System.getProperty("rustreader.smoke") != "true") return
         listOf(sample.resolve("target"), sample.resolve(".rust-compiler-reader")).forEach { path ->
             if (Files.exists(path)) {
                 Files.walk(path).sorted(Comparator.reverseOrder()).forEach { Files.deleteIfExists(it) }

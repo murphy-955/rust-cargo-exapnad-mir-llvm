@@ -4,6 +4,7 @@ import io.github.murphy955.rustreader.context.ItemKind
 import io.github.murphy955.rustreader.context.ItemLocator
 import io.github.murphy955.rustreader.context.ItemRef
 import io.github.murphy955.rustreader.context.spanOf
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -86,6 +87,35 @@ class AsmExtractorTest {
         val result = AsmExtractor.extract(legacy, "demo", emptyList(), item)
         assertFalse(result.empty)
         assertTrue(result.content.contains("_ZN4demo3run17h"))
+    }
+
+    @Test
+    fun ignoresGenericInstantiationsThatMentionTheSelfType() {
+        val symbol = "_RNvMC1_1aNtB2_8AppState3new"
+        val generic = "_RNvMs1_NtC2_6routerINtB5_6RouterNtNtC1_1a8AppStateE3newBP_"
+        val asmWithGenericMention = """
+            .text
+            .type $symbol,@function
+        $symbol:
+            ret
+            .size $symbol, .-$symbol
+
+            .text
+            .type $generic,@function
+        $generic:
+            ret
+            .size $generic, .-$generic
+        """.trimIndent()
+        val item = ItemRef(
+            kind = ItemKind.IMPL_METHOD,
+            name = "new",
+            modulePath = emptyList(),
+            sourceSpan = spanOf("fn new() {}", 0, 1),
+            implSelfType = "AppState",
+        )
+        val result = AsmExtractor.extract(asmWithGenericMention, "a", emptyList(), item)
+        assertEquals(listOf(symbol), result.candidates)
+        assertFalse(result.empty)
     }
 
     @Test

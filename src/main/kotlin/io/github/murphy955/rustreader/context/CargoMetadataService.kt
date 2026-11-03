@@ -83,12 +83,9 @@ object CargoMetadataParser {
         val normalized = file.toAbsolutePath().normalize()
         val targets = pkg.targets.filter { it.kind != TargetKind.OTHER || "custom-build" !in it.kinds }
 
-        if (overrideKey != null) {
-            val byKey = targets.firstOrNull { it.toTargetRef().key == overrideKey }
-                ?: targets.firstOrNull { it.name == overrideKey }
-            if (byKey != null) return TargetChoice(byKey)
-        }
-
+        // A target's own source root always wins. A remembered override may come from another
+        // file in the same package (for example `lib:sample_crate` while this file is
+        // `src/main.rs`), and using it here resolves the item against the wrong crate root.
         targets.firstOrNull { it.srcPath.toAbsolutePath().normalize() == normalized }?.let {
             return TargetChoice(it)
         }
@@ -109,13 +106,6 @@ object CargoMetadataParser {
                         return TargetChoice(candidates.first(), candidates.drop(1))
                     }
                 }
-            } else {
-                val libs = targets.filter { it.kind == TargetKind.LIB }
-                if (libs.isNotEmpty()) return TargetChoice(libs.first(), libs.drop(1))
-
-                val mainBin = targets.firstOrNull { it.kind == TargetKind.BIN && it.name == pkg.name }
-                    ?: targets.firstOrNull { it.kind == TargetKind.BIN && it.srcPath.fileName.toString() == "main.rs" }
-                if (mainBin != null) return TargetChoice(mainBin)
             }
         }
 
@@ -127,6 +117,23 @@ object CargoMetadataParser {
                 val candidates = targets.filter { it.kind == targetKind && it.name == stem }
                 if (candidates.isNotEmpty()) return TargetChoice(candidates.first(), candidates.drop(1))
             }
+        }
+
+        // Only ambiguous module files (for example `src/api.rs`, which can be compiled into
+        // either the lib or a bin) follow the remembered selection.
+        if (overrideKey != null) {
+            val byKey = targets.firstOrNull { it.toTargetRef().key == overrideKey }
+                ?: targets.firstOrNull { it.name == overrideKey }
+            if (byKey != null) return TargetChoice(byKey)
+        }
+
+        if (normalized.startsWith(srcDir) && !normalized.startsWith(srcDir.resolve("bin"))) {
+            val libs = targets.filter { it.kind == TargetKind.LIB }
+            if (libs.isNotEmpty()) return TargetChoice(libs.first(), libs.drop(1))
+
+            val mainBin = targets.firstOrNull { it.kind == TargetKind.BIN && it.name == pkg.name }
+                ?: targets.firstOrNull { it.kind == TargetKind.BIN && it.srcPath.fileName.toString() == "main.rs" }
+            if (mainBin != null) return TargetChoice(mainBin)
         }
 
         // Files outside src/examples/tests/benches can still be modules of a target.

@@ -93,6 +93,42 @@ class CargoMetadataParserTest {
     }
 
     @Test
+    fun exactSourceRootWinsOverStaleOverride() {
+        val metadata = CargoMetadataParser.parse(json)
+        val choice = CargoMetadataParser.resolveTarget(metadata, "app", Path.of("/ws/app/src/main.rs"), "lib:app")
+        assertNotNull(choice)
+        assertEquals(TargetKind.BIN, choice!!.kind)
+        assertEquals("main.rs", choice.target.srcPath.fileName.toString())
+    }
+
+    @Test
+    fun binaryModuleWinsOverStaleOverride() {
+        val metadata = CargoMetadataParser.parse(json)
+        val choice = CargoMetadataParser.resolveTarget(
+            metadata,
+            "app",
+            Path.of("/ws/app/src/bin/extra/helper.rs"),
+            "lib:app",
+        )
+        assertNotNull(choice)
+        assertEquals("extra", choice!!.target.name)
+    }
+
+    @Test
+    fun exampleModuleWinsOverStaleOverride() {
+        val metadata = CargoMetadataParser.parse(json)
+        val choice = CargoMetadataParser.resolveTarget(
+            metadata,
+            "app",
+            Path.of("/ws/app/examples/demo/helper.rs"),
+            "lib:app",
+        )
+        assertNotNull(choice)
+        assertEquals(TargetKind.EXAMPLE, choice!!.kind)
+        assertEquals("demo", choice.target.name)
+    }
+
+    @Test
     fun ignoresCustomBuildTargets() {
         val metadata = CargoMetadataParser.parse(json)
         assertNull(CargoMetadataParser.resolveTarget(metadata, "app", Path.of("/ws/app/build.rs")))

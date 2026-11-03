@@ -18,10 +18,11 @@
 |---|---|---|
 | Macro Expansion | 当前项或整个 crate 的宏展开 | `cargo expand`，否则 `RUSTC_BOOTSTRAP=1 cargo rustc --profile=check -- -Zunpretty=expanded` |
 | MIR | 当前函数、impl 方法和闭包的 MIR | `cargo rustc -- --emit=mir` |
-| Assembly | 当前函数对应的汇编块 | `CARGO_INCREMENTAL=0 cargo rustc -- -C codegen-units=1 --emit=asm` |
+| Assembly | 当前函数对应的汇编块 | `CARGO_INCREMENTAL=0 cargo rustc -- -C codegen-units=1 -C link-dead-code -C lto=no --emit=asm` |
 
 - 从光标位置解析当前函数、impl 方法、闭包、结构体/枚举/trait、`macro_rules!` 等项。
-- 自动定位 `target/**/deps/<crate>-<hash>.mir` / `.s`，按「运行时间 + crate 名」过滤旧产物。
+- 自动定位 `target/**/deps/<crate>-<hash>.mir` / `.s`：按 crate 名、`.d` 依赖文件和 target 源根
+  过滤旧产物及同一 package 其他 target 的产物。
 - MIR 支持 `<impl at file:line:col>` 和 `{closure#N}`；汇编支持 v0/legacy mangled symbol 启发式匹配。
 - 编译失败、函数缺失、函数被内联、工具缺失时都有明确提示。
 - 后台执行、可取消、默认 120 秒超时；同一项目串行运行，避免 cargo target 锁竞争。
@@ -80,8 +81,9 @@
 
 - 宏展开结果没有源码映射，无法精确对应到某个宏调用点。
 - stable 的 `--emit=mir` 是编译前端 MIR，未单态化、未优化；泛型函数只显示泛型 MIR。
-- 汇编是 rustc 生成的 `.s`，不是链接后二进制的反汇编；函数可能因内联、泛型未实例化、非 `pub`
-  或被优化而不出现，此时请尝试 `#[inline(never)]`、单态化 wrapper 或切换 profile。
+- 汇编是 rustc 生成的 `.s`，不是链接后二进制的反汇编。为得到单个产物文件，汇编视图会关闭 LTO
+  （`-C lto=no`）；同时启用 `-C link-dead-code` 保留未被引用的函数。函数仍可能因内联、泛型未
+  实例化或被优化而不出现，此时请尝试 `#[inline(never)]`、单态化 wrapper 或切换 profile。
 - `RUSTC_BOOTSTRAP=1` 可能影响 build script / proc macro 的 feature 检测；可在设置中关闭或改用 nightly。
 - 本插件执行 cargo，等同于在项目目录运行 `cargo build`，因此尊重 IDE 的 Trusted Projects 机制。
 - Linux/macOS 优先，Windows 为 best-effort。

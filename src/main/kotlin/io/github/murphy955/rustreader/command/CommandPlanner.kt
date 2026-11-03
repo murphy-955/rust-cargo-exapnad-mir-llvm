@@ -40,6 +40,7 @@ data class CommandPlan(
     val artifactSearchDirs: List<Path> = emptyList(),
     val crateFilePrefix: String = "",
     val itemAlreadyExtracted: Boolean = false,
+    val targetSourcePath: Path? = null,
     val warnings: List<String> = emptyList(),
 )
 
@@ -152,7 +153,8 @@ class CommandPlanner(
             listOf("--profile", context.profile.ifBlank { "dev" }) +
             featureArguments(context.features) +
             targetTripleArguments(context) +
-            listOf("--", "-C", "codegen-units=1", "--emit=asm") +
+            // LTO would split the output into per-CGU `.rcgu.s` files instead of one artifact.
+            listOf("--", "-C", "codegen-units=1", "-C", "link-dead-code", "-C", "lto=no", "--emit=asm") +
             context.extraRustcArgs
         return artifactPlan(ArtifactKind.ASM, context, command, "s", environment)
     }
@@ -227,6 +229,7 @@ class CommandPlanner(
             artifactExtension = extension,
             artifactSearchDirs = artifactSearchDirectories(context),
             crateFilePrefix = context.crateName + "-",
+            targetSourcePath = context.crateRoot,
             warnings = emptyList(),
         )
     }

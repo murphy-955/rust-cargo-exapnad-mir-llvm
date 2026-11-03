@@ -75,6 +75,48 @@ class MirExtractorTest {
     }
 
     @Test
+    fun extractsModulePrefixedImplMethod() {
+        val mirInModule = """
+            fn api::<impl at src/lib.rs:9:1: 9:11>::get(_1: &Point) -> u64 {
+                _0 = const 0_u64;
+                return;
+            }
+        """.trimIndent()
+        val result = MirExtractor.extract(
+            mirInModule,
+            itemAt("pub fn get"),
+            includeClosures = false,
+            sourceFileHint = "src/lib.rs",
+        )
+        assertTrue(result.warnings.isEmpty())
+        assertTrue(result.content.contains("fn api::<impl at src/lib.rs:9:1"))
+    }
+
+    @Test
+    fun extractsModulePrefixedImplMethodClosure() {
+        val mirInModule = """
+            fn api::<impl at src/lib.rs:9:1: 9:11>::get(_1: &Point) -> u64 {
+                _0 = const 0_u64;
+                return;
+            }
+
+            fn api::<impl at src/lib.rs:9:1: 9:11>::get::{closure#0}(_1: &i32) -> u64 {
+                _0 = const 0_u64;
+                return;
+            }
+        """.trimIndent()
+        val result = MirExtractor.extract(
+            mirInModule,
+            itemAt("pub fn get"),
+            includeClosures = true,
+            sourceFileHint = "src/lib.rs",
+        )
+        assertTrue(result.warnings.isEmpty())
+        assertTrue(result.matchedItems.size == 2)
+        assertTrue(result.content.contains("::{closure#0}"))
+    }
+
+    @Test
     fun reportsAmbiguousFreeFunctions() {
         val ambiguous = """
             fn foo(_1: u64) -> u64 {

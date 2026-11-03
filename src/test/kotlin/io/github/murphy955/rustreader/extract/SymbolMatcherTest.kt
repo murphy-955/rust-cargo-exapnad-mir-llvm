@@ -1,6 +1,7 @@
 package io.github.murphy955.rustreader.extract
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -30,6 +31,18 @@ class SymbolMatcherTest {
     @Test
     fun returnsZeroWhenNameDoesNotAppear() {
         assertEquals(0, SymbolMatcher.score("_RNvC1_1a5other", "a", emptyList(), "run"))
+    }
+
+    @Test
+    fun prefersOwnImplOverGenericInstantiation() {
+        val own = "_RNvMC1_1aNtB2_8AppState3new"
+        val generic = "_RNvMs1_NtC2_6routerINtB5_6RouterNtNtC1_1a8AppStateE3newBP_"
+        assertFalse(SymbolMatcher.isInsideGenericArgs(own, own.indexOf("8AppState")))
+        assertTrue(SymbolMatcher.isInsideGenericArgs(generic, generic.indexOf("8AppState")))
+        assertTrue(
+            SymbolMatcher.score(own, "a", emptyList(), "new", implSelfType = "AppState") >
+                SymbolMatcher.score(generic, "a", emptyList(), "new", implSelfType = "AppState"),
+        )
     }
 
     @Test

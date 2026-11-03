@@ -29,7 +29,12 @@ object SymbolMatcher {
 
         if (implSelfType != null) {
             val typeName = simpleTypeName(implSelfType)
-            if (typeName.isNotEmpty() && hasToken(symbol, typeName)) score += 80
+            val typeIndex = if (typeName.isEmpty()) -1 else symbol.indexOf(token(typeName))
+            if (typeIndex >= 0) {
+                // The type appears inside generic arguments of generic code that mentions it
+                // (`Arc<AppState>::new`). Only an impl on that type has it on the symbol's own path.
+                score += if (isInsideGenericArgs(symbol, typeIndex)) 20 else 80
+            }
         }
 
         if (!isClosure) {
@@ -47,6 +52,18 @@ object SymbolMatcher {
     fun hasToken(symbol: String, identifier: String): Boolean {
         if (identifier.isEmpty()) return false
         return symbol.contains(token(identifier))
+    }
+
+    /**
+     * Whether the length-prefixed identifier at [index] is the last item of a v0 generic
+     * argument list (`...<AppState>::new` mangles as `8AppStateE3new`). Such an occurrence is
+     * a type argument of some other item, not the self type of the impl the symbol belongs to.
+     */
+    fun isInsideGenericArgs(symbol: String, index: Int): Boolean {
+        var cursor = index
+        while (cursor < symbol.length && symbol[cursor].isDigit()) cursor++
+        val length = symbol.substring(index, cursor).toIntOrNull() ?: return false
+        return symbol.getOrNull(cursor + length) == 'E'
     }
 
     private fun token(identifier: String): String =

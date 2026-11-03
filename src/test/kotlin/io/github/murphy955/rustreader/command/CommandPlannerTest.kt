@@ -130,6 +130,8 @@ class CommandPlannerTest {
         val plan = planner().plan(ArtifactKind.ASM, context())
         assertEquals("0", plan.spec.environment["CARGO_INCREMENTAL"])
         assertTrue(plan.spec.command.contains("codegen-units=1"))
+        assertTrue(plan.spec.command.contains("link-dead-code"))
+        assertTrue(plan.spec.command.contains("lto=no"))
         assertTrue(plan.spec.command.contains("--emit=asm"))
         assertEquals("s", plan.artifactExtension)
     }
